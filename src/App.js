@@ -4,58 +4,47 @@ import "./App.css";
 
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
+import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up";
 import Header from "./components/header/header.component";
+import { auth } from "./firebase/firebase.utils";
 
-function App() {
-  return (
+class App extends React.Component 
+{
+  constructor() {
+    super();
+
+    this.state = {
+      currentUser: null
+    }
+  }
+
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
+      this.setState({ currentUser:user });
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+
+
+
+  render() {
+    return (
     <div>
-      <Header />
+      <Header currentUser={ this.state.currentUser } />
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/shop" component={ShopPage} />
+        <Route path="/signin" component={SignInAndSignUpPage} />
       </Switch>
     </div>
   );
+  }
+  
 }
-
-// const HomePage = (props) => {
-//   return (
-//     <div>
-//       <Link to="/topics">Topic</Link>
-//       <button onClick={()=>props.history.push('/topics')}>Topics </button>
-//       <h1>Home Page</h1>
-//     </div>
-//   );
-// };
-
-// const TopicList = (props) => {
-//   console.log(props);
-//   return (
-//     <div>
-//       <h1>Topic list page</h1>
-//     </div>
-//   );
-// };
-
-// const TopicDetail = props => {
-//   console.log(props);
-//   return (
-//     <div>
-//       <h1>Topic detail page: {props.match.params.topicId}</h1>
-//     </div>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//     <div>
-//       <Switch>
-//         <Route path="/topic/:topicId" component={TopicDetail} />
-//         <Route path="/topics" component={TopicList} />
-//         <Route path="/" component={HomePage} />
-//       </Switch>
-//     </div>
-//   );
-// };
 
 export default App;
